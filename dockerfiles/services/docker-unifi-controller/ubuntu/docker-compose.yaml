@@ -1,0 +1,46 @@
+# version: '2'
+# services:
+#  unifi-controller:
+#    container_name: unifi.controller-5.5.19
+#    image: jacobalberty/unifi:5.5.19
+#    restart: always
+#    volumes:
+#      - './build/data/lib:/var/lib/unifi'
+#      - './build/data/log:/var/log/unifi'
+#      - './build/data/run:/var/run/unifi'
+#    ports:
+#      - '3478:3478/udp'
+#      - '10001:10001/udp'
+#      - '6789:6789/tcp'
+#      - '8080:8080/tcp'
+#      - '8880:8880/tcp'
+#      - '8443:8443/tcp'
+#      - '8843:8843/tcp'
+#    environment:
+#      - TZ=Pacific/Auckland
+#    labels:
+#      - 'unifi-controller'
+
+# SOURCE: https://github.com/mgcrea/docker-unifi/blob/master/Dockerfile
+version: '3'
+services:
+  unifi:
+    image: mgcrea/unifi:5
+    container_name: unifi
+    environment:
+      - TZ=America/New York
+    network_mode: "host"
+    privileged: true
+    volumes:
+      - ./build/data/data:/usr/lib/unifi/data
+      - ./build/data/logs:/usr/lib/unifi/logs
+      - ./build/data/work:/usr/lib/unifi/work
+    ports:
+      - "8880:8880/tcp"
+      - "8443:8443/tcp"
+      - "8080:8080/tcp"
+      - "8843:8843/tcp"
+      - "3478:3478/udp"
+    restart: always
+    labels:
+     - 'unifi-controller'
