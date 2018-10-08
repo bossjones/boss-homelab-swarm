@@ -21,6 +21,8 @@
 #    labels:
 #      - 'unifi-controller'
 
+# READ: https://medium.com/@haikulab/running-a-unifi-controller-using-docker-compose-6dd439fc3e0e
+
 # SOURCE: https://github.com/mgcrea/docker-unifi/blob/master/Dockerfile
 version: '3'
 services:
