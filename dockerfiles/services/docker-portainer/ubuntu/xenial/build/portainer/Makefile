@@ -4,11 +4,9 @@ default: deploy
 
 deploy-portainer:
 	@docker stack deploy -c docker-stack.yml portainer
-	@docker stack deploy -c docker-stack.yml portainer-agent
 
 rm-portainer:
 	@docker stack rm -c docker-stack.yml portainer
-	@docker stack rm -c docker-stack.yml portainer-agent
 
 deploy: deploy-portainer
 
