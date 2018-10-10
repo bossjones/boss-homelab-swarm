@@ -185,7 +185,7 @@ services:
 
 
   fluentd:
-    image: fluentd/fluentd:v0.12.43
+    image: docker.io/fluentd/fluentd:v0.12.43
     deploy:
       replicas: 1
       resources:
