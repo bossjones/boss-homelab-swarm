@@ -7,7 +7,7 @@ services:
     ports:
         - "4110:4110/tcp"
     networks:
-        - home-web
+        - web
     labels:
     - "traefik.frontend.rule=Host:whoami.hyenalab.home"
     deploy:
@@ -18,10 +18,8 @@ services:
 
 networks:
   web:
-    external:
-        name: 'home-web'
-    #    external: true
+    external: true
+    name: home-web
   docker:
-    external:
-        name: 'home-docker'
-    # external: true
+    external: true
+    name: home-docker
