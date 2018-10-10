@@ -2,7 +2,7 @@ version: '3.5'
 services:
 
   elasticsearch:
-    image: registry.hyenalab.home/private/elasticsearch:6.0.0
+    image: registry.scarlettlab.home/private/elasticsearch:6.0.0
     deploy:
       replicas: 1
       resources:
@@ -50,7 +50,7 @@ services:
         fluentd-sub-second-precision: 'true'
 
   kibana:
-    image: registry.hyenalab.home/private/kibana:6.0.0
+    image: registry.scarlettlab.home/private/kibana:6.0.0
     deploy:
       replicas: 1
       resources:
@@ -60,7 +60,7 @@ services:
       labels:
         routing-auth-realm: Kibana Logs
         routing-auth: /etc/auth-config/kibana.auth.conf
-        routing-host: logs.hyenalab.home
+        routing-host: logs.scarlettlab.home
         routing-port: 5601
     networks:
       - default
@@ -74,7 +74,7 @@ services:
         max-file: 4
 
   fluentd:
-    image: registry.hyenalab.home/private/fluentd:v1.0
+    image: registry.scarlettlab.home/private/fluentd:v1.0
     deploy:
       replicas: 1
       resources:
