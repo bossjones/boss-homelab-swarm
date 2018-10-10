@@ -9,7 +9,15 @@ services:
     networks:
         - web
     labels:
-    - "traefik.frontend.rule=Host:whoami.hyenalab.home"
+    # - "traefik.frontend.rule=Host:whoami.hyenalab.home"
+    - "traefik.enable=true"
+    - "traefik.basic.port=80"
+    - "traefik.basic.protocol=http"
+    # - "traefik.backend=e_whoami0"
+    - "traefik.backend.loadbalancer.sticky=true"
+    - "traefik.frontend.rule=Host:whoami.scarlettlab.home"
+    - "traefik.docker.network=traefik-net"
+    - "traefik.backend.loadbalancer.swarm=true"
     deploy:
       mode: global
       resources:
@@ -23,3 +31,6 @@ networks:
   docker:
     external: true
     name: home-docker
+  traefik:
+    external: true
+    name: traefik-net

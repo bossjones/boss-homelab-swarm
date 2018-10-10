@@ -1,0 +1,53 @@
+networks:
+    traefik:
+      external: true
+volumes:
+    data:
+
+# SOURCE: https://digita.lism.ro/2018/08/dockerizing-personal-infrastructure/
+
+services:
+  traefik:
+    image: traefik:1.7
+  command:
+      - "--docker"
+      - "--docker.swarmmode=true"
+      - "--docker.domain=docker.localhost"
+      - "--docker.watch=true"
+      - "--docker.exposedbydefault=true"
+      - "--docker.endpoint=unix:///var/run/docker.sock"
+    ports:
+      - "80:80" # The HTTP port
+      - "8080:8080" # The Web UI (enabled by --api)
+      - "443:443"
+  volumes:
+    - /var/run/docker.sock:/var/run/docker.sock # So that Traefik can listen to the Docker events
+    - /opt/traefik/traefik.toml:/traefik.toml
+    - /opt/traefik/acme.json:/etc/traefik/acme/acme.json
+  networks:
+    - traefik
+  labels:
+    - "traefik.enable=false"
+  deploy:
+    placement:
+        constraints: [node.role == manager]
+  restart_policy:
+        condition: on-failure
+
+
+
+
+
+  whoami:
+    image: emilevauge/whoami
+    deploy:
+        labels:
+        - "traefik.enable=true"
+        - "traefik.basic.port=80"
+        - "traefik.basic.protocol=http"
+        - "traefik.backend=e_whoami0"
+        - "traefik.frontend.rule=Host:corpexample.com"
+        - "traefik.docker.network=traefik-net"
+        - "traefik.backend.loadbalancer.swarm=true"
+    networks:
+        - traefik
