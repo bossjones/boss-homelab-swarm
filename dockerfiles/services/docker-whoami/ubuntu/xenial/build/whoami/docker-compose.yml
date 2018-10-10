@@ -18,8 +18,10 @@ services:
 
 networks:
   web:
-    name: home-web
-    external: true
+    external:
+        name: 'home-web'
+    #    external: true
   docker:
-    name: home-docker
-    external: true
+    external:
+        name: 'home-docker'
+    # external: true
