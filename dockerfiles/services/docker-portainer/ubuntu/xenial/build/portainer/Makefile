@@ -1,19 +1,12 @@
-.PHONY: default build dependencies image
+.PHONY: default deploy deploy-portainer create-networking
 
-default: build
-
-build:
-	CGO_ENABLED=0 go build -a --installsuffix cgo --ldflags="-s" -o whoami
-
-dependencies:
-	dep ensure -v
-
-image:
-	docker build -t containous/whoami .
+default: deploy
 
 deploy-portainer:
 	@docker stack deploy -c docker-stack.yml portainer
 	@docker stack deploy -c docker-stack.yml agent
+
+deploy: deploy-portainer
 
 create-networking:
 	docker network create --driver overlay --subnet=10.0.9.0/24 home-web
