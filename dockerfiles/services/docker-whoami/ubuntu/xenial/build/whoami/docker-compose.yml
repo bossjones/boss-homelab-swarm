@@ -1,0 +1,25 @@
+version: '3.5'
+
+services:
+  whoami:
+    image: containous/whoami  # A container that exposes an API to show it's IP address
+    command: -port 4110
+    ports:
+        - "4110:4110/tcp"
+    networks:
+        - home-web
+    labels:
+    - "traefik.frontend.rule=Host:whoami.hyenalab.home"
+    deploy:
+      mode: global
+      resources:
+        limits:
+          memory: 32M
+
+networks:
+  web:
+    name: home-web
+    external: true
+  docker:
+    name: home-docker
+    external: true
