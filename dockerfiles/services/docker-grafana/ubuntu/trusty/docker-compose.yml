@@ -4,14 +4,14 @@ version: '3.5'
 # It is possible to re-use configuration fragments using extension fields. Those special fields can be of any format as long as they are located at the root of your Compose file and their name start with the x- character sequence.
 # x-log-options:
 #   &log-options
-#   fluentd-address: 192.168.0.52:24224
+#   fluentd-address: 192.168.60.10:24224
 #   fluentd-async-connect: 'true'
 #   fluentd-sub-second-precision: 'true'
 
 # x-nfs-volume-opts:
 #   &volume-options
 #   type: nfs4
-#   o: addr=192.168.0.52,rsize=8192,wsize=8192,timeo=15,hard,intr
+#   o: addr=192.168.60.10,rsize=8192,wsize=8192,timeo=15,hard,intr
 
 services:
   # Visualization

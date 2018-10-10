@@ -159,7 +159,7 @@ services:
 #         parallelism: 1
 #         order: start-first
 #       labels:
-#         routing-host: metrics.viktoradam.net
+#         routing-host: metrics.hyenalab.home
 #         routing-port: 3000
 #         prometheus-job: grafana
 #         prometheus-port: 3000
