@@ -1,0 +1,71 @@
+version: '3.5'
+
+# NOTE: Extension fields
+# It is possible to re-use configuration fragments using extension fields. Those special fields can be of any format as long as they are located at the root of your Compose file and their name start with the x- character sequence.
+# x-log-options:
+#   &log-options
+#   fluentd-address: 192.168.0.52:24224
+#   fluentd-async-connect: 'true'
+#   fluentd-sub-second-precision: 'true'
+
+# x-nfs-volume-opts:
+#   &volume-options
+#   type: nfs4
+#   o: addr=192.168.0.52,rsize=8192,wsize=8192,timeo=15,hard,intr
+
+services:
+  # Visualization
+
+  grafana:
+    image: rycus86/grafana:5.2.2
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          memory: 48M
+      update_config:
+        parallelism: 1
+        order: start-first
+      labels:
+        routing-host: metrics.hyenalab.home
+        routing-port: 3000
+        prometheus-job: grafana
+        prometheus-port: 3000
+    # secrets:
+    #   - source: grafana-config
+    #     target: /etc/grafana/grafana.ini
+    networks:
+      - web
+      - monitoring
+    ports:
+      - 3000:3000
+    volumes:
+      - grafana-data:/var/lib/grafana/data:nocopy
+    logging:
+      driver: fluentd
+      options:
+        <<: *log-options
+        tag: app.grafana
+secrets:
+  grafana-config:
+    file: ./config/grafana.conf
+    name: grafana-config-${GRAFANA_CONF}
+
+volumes:
+  grafana-data:
+    driver: local
+    driver_opts:
+      <<: *volume-options
+      type: nfs4
+      device: :/grafana-data
+
+networks:
+  web:
+    name: home-web
+    external: true
+  monitoring:
+    name: home-monitoring
+    external: true
+  docker:
+    name: home-docker
+    external: true

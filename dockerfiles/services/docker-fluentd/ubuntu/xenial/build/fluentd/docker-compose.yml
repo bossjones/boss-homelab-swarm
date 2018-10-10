@@ -1,0 +1,38 @@
+# <><><><>
+version: '3.5'
+services:
+
+  fluentd:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # image: elasticsearch
+    image: docker.io/bossjones/fluentd:latest
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          memory: 96M
+    configs:
+      - source: fluent-config
+        target: /fluentd/etc/fluent.conf
+    ports:
+      - 24224:24224
+      - 24224:24224/udp
+    environment:
+      - RUBY_GC_HEAP_OLDOBJECT_LIMIT_FACTOR=0.8
+    logging:
+      driver: json-file
+      options:
+        max-size: 25m
+        max-file: 4
+
+configs:
+  fluent-config:
+    name: fluent-config-${FLUENT_CONFIG}
+    file: ./config/fluent.config
+
+networks:
+  web:
+    name: home-web
+    external: true

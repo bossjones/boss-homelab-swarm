@@ -2,6 +2,12 @@
 ## Default Elasticsearch configuration from elasticsearch-docker.
 ## from https://github.com/elastic/elasticsearch-docker/blob/master/build/elasticsearch/elasticsearch.yml
 #
+
+# FIXME:
+# NOTE: https://github.com/rycus86/home-stack-logging/blob/f0468bc52bb6d123671413fb9964222385e9f22f/config/elasticsearch.yml
+http.host: 0.0.0.0
+transport.host: 127.0.0.1
+
 cluster.name: "docker-cluster"
 network.host: 0.0.0.0
 
