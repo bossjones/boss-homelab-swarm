@@ -11,8 +11,9 @@ dependencies:
 image:
 	docker build -t containous/whoami .
 
-deploy-whoami:
-	@docker stack deploy -c docker-compose.yml whoami
+deploy-portainer:
+	@docker stack deploy -c docker-stack.yml portainer
+	@docker stack deploy -c docker-stack.yml agent
 
 create-networking:
 	docker network create --driver overlay --subnet=10.0.9.0/24 home-web

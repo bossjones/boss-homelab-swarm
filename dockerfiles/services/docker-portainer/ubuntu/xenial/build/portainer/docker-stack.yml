@@ -1,0 +1,370 @@
+version: '3.5'
+
+# x-log-options:
+#   &log-options
+#   fluentd-address: 192.168.0.52:24224
+#   fluentd-async-connect: 'true'
+#   fluentd-sub-second-precision: 'true'
+
+# x-nfs-volume-opts:
+#   &volume-options
+#   type: nfs4
+#   o: addr=192.168.0.52,rsize=8192,wsize=8192,timeo=15,hard,intr
+
+services:
+
+#   prometheus:
+#     image: rycus86/prometheus:2.3.2
+#     command: >
+#       --config.file=/etc/prometheus/prometheus.yml
+#       --storage.tsdb.path=/prometheus
+#       --storage.tsdb.no-lockfile
+#       --web.console.libraries=/usr/share/prometheus/console_libraries
+#       --web.console.templates=/usr/share/prometheus/consoles
+#     deploy:
+#       replicas: 1
+#       resources:
+#         limits:
+#           memory: 384M
+#       placement:
+#         constraints:
+#           - node.labels.memory == high
+#     ports:
+#       - 9090:9090
+#     volumes:
+#       - prometheus-data:/prometheus:nocopy
+#       - type: volume
+#         source: prometheus-config
+#         target: /etc/prometheus
+#         read_only: true
+#         volume:
+#           nocopy: true
+#     networks:
+#       - default
+#       - monitoring
+#     logging:
+#       driver: fluentd
+#       options:
+#         <<: *log-options
+#         tag: app.prometheus
+
+#   prometheus-pygen:
+#     image: rycus86/docker-pygen
+#     command: >
+#       --template /etc/docker-pygen/templates/prometheus.tmpl
+#       --target /etc/prometheus/prometheus.yml
+#       --signal prometheus HUP
+#       --interval 3 10
+#       --swarm-manager
+#       --workers tasks.prometheus-pygen-worker
+#     deploy:
+#       replicas: 1
+#       resources:
+#         limits:
+#           memory: 32M
+#       labels:
+#         prometheus-job: pygen-manager-prometheus
+#         prometheus-port: 9413
+#     environment:
+#       DOCKER_HOST: tcp://docker-manager:2375
+#     networks:
+#       - monitoring
+#       - docker
+#     configs:
+#       - source: prometheus-template
+#         target: /etc/docker-pygen/templates/prometheus.tmpl
+#     volumes:
+#       - prometheus-config:/etc/prometheus:nocopy
+#     logging:
+#       driver: fluentd
+#       options:
+#         <<: *log-options
+#         tag: app.pygen.manager.prometheus
+
+#   prometheus-pygen-worker:
+#     image: rycus86/docker-pygen:worker
+#     command: --manager prometheus-pygen
+#     read_only: true
+#     deploy:
+#       mode: global
+#       resources:
+#         limits:
+#           memory: 32M
+#       labels:
+#         prometheus-job: pygen-worker-prometheus
+#         prometheus-port: 9414
+#     volumes:
+#       - /var/run/docker.sock:/var/run/docker.sock:ro
+#     logging:
+#       driver: fluentd
+#       options:
+#         <<: *log-options
+#         tag: app.pygen.worker.prometheus
+
+#   prometheus-node-exporter:
+#     image: rycus86/prometheus-node-exporter:0.16.0
+#     deploy:
+#       mode: global
+#       resources:
+#         limits:
+#           memory: 32M
+#       update_config:
+#         parallelism: 1
+#         order: start-first
+#       labels:
+#         prometheus-job: node-exporter
+#         prometheus-port: 9100
+#     pid: host
+#     logging:
+#       driver: json-file
+#       options:
+#         max-size: 25m
+#         max-file: 4
+
+#   container-metrics:
+#     image: rycus86/container-metrics
+#     command: >
+#       -labels com.docker.swarm.service.name
+#       -interval 15s
+#       -port 8080
+#     deploy:
+#       mode: global
+#       resources:
+#         limits:
+#           memory: 32M
+#       update_config:
+#         parallelism: 1
+#         order: start-first
+#       labels:
+#         prometheus-job: container-metrics
+#         prometheus-port: 8080
+#     volumes:
+#       - /var/run/docker.sock:/var/run/docker.sock:ro
+#     logging:
+#       driver: fluentd
+#       options:
+#         <<: *log-options
+#         tag: app.container.metrics
+
+#   # Visualization
+
+#   grafana:
+#     image: rycus86/grafana:5.2.2
+#     deploy:
+#       replicas: 1
+#       resources:
+#         limits:
+#           memory: 48M
+#       update_config:
+#         parallelism: 1
+#         order: start-first
+#       labels:
+#         routing-host: metrics.viktoradam.net
+#         routing-port: 3000
+#         prometheus-job: grafana
+#         prometheus-port: 3000
+#     secrets:
+#       - source: grafana-config
+#         target: /etc/grafana/grafana.ini
+#     networks:
+#       - web
+#       - monitoring
+#     ports:
+#       - 3000:3000
+#     volumes:
+#       - grafana-data:/var/lib/grafana/data:nocopy
+#     logging:
+#       driver: fluentd
+#       options:
+#         <<: *log-options
+#         tag: app.grafana
+
+  portainer:
+    image: portainer/portainer:1.19.1
+    command: -H tcp://tasks.portainer-agent:9001 --tlsskipverify
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          memory: 32M
+      update_config:
+        parallelism: 1
+        order: start-first
+    ports:
+      - 9000:9000
+    volumes:
+      - portainer-data:/data:nocopy
+    # logging:
+    #   driver: fluentd
+    #   options:
+    #     <<: *log-options
+    #     tag: app.portainer
+
+  portainer-agent:
+    image: portainer/agent:1.1.1
+    deploy:
+      mode: global
+      resources:
+        limits:
+          memory: 32M
+    environment:
+      AGENT_CLUSTER_ADDR: tasks.portainer-agent
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    # logging:
+    #   driver: fluentd
+    #   options:
+    #     <<: *log-options
+    #     tag: app.portainer.agent
+
+#   release-watcher:
+#     image: rycus86/release-watcher
+#     deploy:
+#       replicas: 1
+#       resources:
+#         limits:
+#           memory: 32M
+#       update_config:
+#         parallelism: 1
+#         order: start-first
+#     configs:
+#       - source: release-watcher-app
+#         target: /var/conf/release-watcher.yml
+#       - source: release-watcher-main
+#         target: /var/secrets/release-watcher
+#     secrets:
+#       - source: release-watcher-github
+#         target: /var/secrets/github
+#       - source: release-watcher-slack
+#         target: /var/secrets/slack
+#     volumes:
+#       - release-watcher-data:/var/data:nocopy
+#     logging:
+#       driver: fluentd
+#       options:
+#         <<: *log-options
+#         tag: app.release.watcher
+
+#   github-exporter:
+#     image: rycus86/github-exporter
+#     command: >
+#       -user rycus86
+#       -credentials /secret/github.creds
+#       -interval 15m
+#       -skip-forks
+#       -port 8080
+#     deploy:
+#       replicas: 1
+#       resources:
+#         limits:
+#           memory: 32M
+#       update_config:
+#         parallelism: 1
+#         order: start-first
+#       labels:
+#         prometheus-job: github-exporter
+#         prometheus-port: 8080
+#     secrets:
+#       - source: github-exporter-creds
+#         target: /secret/github.creds
+#     logging:
+#       driver: fluentd
+#       options:
+#         <<: *log-options
+#         tag: app.github.exporter
+
+#   dockerhub-exporter:
+#     image: rycus86/dockerhub-exporter
+#     command: >
+#       -owner rycus86
+#       -interval 1h
+#       -port 8080
+#     deploy:
+#       replicas: 1
+#       resources:
+#         limits:
+#           memory: 32M
+#       update_config:
+#         parallelism: 1
+#         order: start-first
+#       labels:
+#         prometheus-job: dockerhub-exporter
+#         prometheus-port: 8080
+#     logging:
+#       driver: fluentd
+#       options:
+#         <<: *log-options
+#         tag: app.dockerhub.exporter
+
+# configs:
+#   prometheus-template:
+#     file: ./config/prometheus.pygen.template.yml
+#     name: pygen-prometheus-${PROMETHEUS_PYGEN_TEMPLATE_YML}
+#   telegraf-config:
+#     file: ./config/telegraf.config
+#     name: telegraf-config-${TELEGRAF_CONFIG}
+#   release-watcher-app:
+#     file: ./config/release-watcher.yml
+#     name: release-watcher-app-config-${RELEASE_WATCHER_YML}
+#   release-watcher-main:
+#     file: ./config/rw_main.config
+#     name: release-watcher-main-config-${RW_MAIN_CONFIG}
+
+# secrets:
+#   grafana-config:
+#     file: ./config/grafana.conf
+#     name: grafana-config-${GRAFANA_CONF}
+#   release-watcher-github:
+#     file: ./config/rw_github.conf
+#     name: release-watcher-github-config-${RW_GITHUB_CONF}
+#   release-watcher-slack:
+#     file: ./config/rw_slack.conf
+#     name: release-watcher-slack-config-${RW_SLACK_CONF}
+#   github-exporter-creds:
+#     file: ./config/github-exporter.conf
+#     name: github-exporter-creds-${GITHUB_EXPORTER_CONF}
+
+volumes:
+#   prometheus-config:
+#     driver: local
+#     driver_opts:
+#       <<: *volume-options
+#       device: :/mnt/shared/prometheus-config
+
+#   prometheus-data:
+#     driver: local
+#     driver_opts:
+#       <<: *volume-options
+#       device: :/mnt/shared/prometheus-data
+
+#   grafana-data:
+#     driver: local
+#     driver_opts:
+#       <<: *volume-options
+#       type: nfs4
+#       device: :/grafana-data
+
+  portainer-data:
+    driver: local
+    driver_opts:
+      <<: *volume-options
+      type: nfs4
+      device: :/portainer-data
+
+#   release-watcher-data:
+#     driver: local
+#     driver_opts:
+#       <<: *volume-options
+#       type: nfs4
+#       device: :/release-watcher
+
+networks:
+  web:
+    name: home-web
+    external: true
+  monitoring:
+    name: home-monitoring
+    external: true
+  docker:
+    name: home-docker
+    external: true
