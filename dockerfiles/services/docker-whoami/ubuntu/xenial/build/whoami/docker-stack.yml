@@ -35,6 +35,6 @@ networks:
   docker:
     external: true
     name: home-docker
-  traefik:
+  traefik_net:
     external: true
-    name: traefik-net
+    name: traefik_net
