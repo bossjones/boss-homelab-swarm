@@ -16,7 +16,7 @@ deploy-whoami:
 	@docker stack deploy -c docker-stack.yml whoami
 
 rm-whoami:
-	@docker stack rm -c docker-stack.yml whoami
+	@docker stack rm whoami
 
 deploy: deploy-whoami
 
