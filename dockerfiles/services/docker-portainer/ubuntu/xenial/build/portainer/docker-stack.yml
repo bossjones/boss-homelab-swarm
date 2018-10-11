@@ -16,7 +16,7 @@ services:
     image: portainer/portainer:1.19.1
     command: -H tcp://tasks.portainer-agent:9001 --tlsskipverify
     networks:
-        - traefik_net
+        - traefik_proxy
     deploy:
       replicas: 1
       resources:
@@ -46,7 +46,7 @@ services:
     - "traefik.weight=10"
     - "traefik.enable=true"
     - "traefik.passHostHeader=true"
-    - "traefik.docker.network=traefik_net"
+    - "traefik.docker.network=traefik_proxy"
     - "traefik.frontend.entryPoints=http"
     - "traefik.backend.loadbalancer.swarm=true"
     - "traefik.backend.loadbalancer.method=drr"
@@ -230,5 +230,5 @@ networks:
     external: true
   traefik:
     external: true
-    name: traefik_net
+    name: traefik_proxy
 

@@ -16,7 +16,7 @@ services:
     - "traefik.backend=viz"
     - "traefik.backend.loadbalancer.sticky=true"
     - "traefik.frontend.rule=Host:viz.scarlettlab.home"
-    # - "traefik.docker.network=traefik-net"
+    # - "traefik.docker.network=traefik_proxy"
     - "traefik.backend.loadbalancer.swarm=true"
     deploy:
       mode: replicated
@@ -45,4 +45,4 @@ networks:
     name: home-docker
   traefik:
     external: true
-    name: traefik_net
+    name: traefik_proxy

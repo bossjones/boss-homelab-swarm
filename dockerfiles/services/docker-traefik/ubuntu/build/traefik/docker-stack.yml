@@ -30,7 +30,7 @@ services:
     - /opt/traefik/traefik.toml:/traefik.toml
     # - /opt/traefik/acme.json:/etc/traefik/acme/acme.json
   networks:
-    - traefik_net
+    - traefik_proxy
   labels:
     - "traefik.enable=false"
   deploy:
@@ -48,4 +48,4 @@ networks:
     name: home-docker
   traefik:
     external: true
-    name: traefik_net
+    name: traefik_proxy
