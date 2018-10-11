@@ -13,6 +13,8 @@ services:
       resources:
         limits:
           memory: 96M
+    depends_on:
+         - elasticsearch
     configs:
       - source: fluent-config
         target: /fluentd/etc/fluent.conf
@@ -31,8 +33,14 @@ configs:
   fluent-config:
     name: fluent-config-${FLUENT_CONFIG}
     file: ./config/fluent.config
-
 networks:
   web:
-    name: home-web
     external: true
+    name: home-web
+  docker:
+    external: true
+    name: home-docker
+  traefik_proxy:
+    external: true
+    driver: overlay
+    name: traefik_proxy
