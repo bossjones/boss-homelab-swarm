@@ -1,63 +1,28 @@
 version: '3.5'
 
 services:
-  visualizer:
-    image: dockersamples/visualizer:stable
+  whoami:
+    image: containous/whoami  # A container that exposes an API to show it's IP address
+    command: -port 4110
     ports:
-      - "9190:8080/tcp"
-    stop_grace_period: 1m30s
-    volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock"
+        - "4110:4110/tcp"
+    networks:
+        - web
     labels:
     # - "traefik.frontend.rule=Host:whoami.scarlettlab.home"
     - "traefik.enable=true"
-    - "traefik.basic.port=8080"
-    # - "traefik.basic.protocol=http"
-    - "traefik.backend=viz"
+    - "traefik.basic.port=4110"
+    - "traefik.basic.protocol=http"
+    - "traefik.backend=whoami"
     - "traefik.backend.loadbalancer.sticky=true"
-    - "traefik.frontend.rule=Host:viz.scarlettlab.home"
-    # - "traefik.docker.network=traefik-net"
+    - "traefik.frontend.rule=Host:whoami.scarlettlab.home"
+    - "traefik.docker.network=traefik-net"
     - "traefik.backend.loadbalancer.swarm=true"
     deploy:
-      mode: replicated
-      replicas: 1
-      restart_policy:
-        condition: on-failure
-        delay: 10s
-        max_attempts: 3
-        window: 120s
+      mode: global
       resources:
         limits:
-          cpus: '0.20'
-          memory: 128M
-        reservations:
-          cpus: '0.10'
-          memory: 50M
-      placement:
-        constraints: [node.role == manager]
-
-  # whoami:
-  #   image: containous/whoami  # A container that exposes an API to show it's IP address
-  #   command: -port 4110
-  #   ports:
-  #       - "4110:4110/tcp"
-  #   networks:
-  #       - web
-  #   labels:
-  #   # - "traefik.frontend.rule=Host:whoami.scarlettlab.home"
-  #   - "traefik.enable=true"
-  #   - "traefik.basic.port=80"
-  #   - "traefik.basic.protocol=http"
-  #   - "traefik.backend=whoami"
-  #   - "traefik.backend.loadbalancer.sticky=true"
-  #   - "traefik.frontend.rule=Host:whoami.scarlettlab.home"
-  #   - "traefik.docker.network=traefik-net"
-  #   - "traefik.backend.loadbalancer.swarm=true"
-  #   deploy:
-  #     mode: global
-  #     resources:
-  #       limits:
-  #         memory: 32M
+          memory: 32M
 
 networks:
   web:
