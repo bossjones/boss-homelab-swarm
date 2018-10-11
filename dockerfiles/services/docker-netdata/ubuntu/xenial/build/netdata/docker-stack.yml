@@ -73,7 +73,7 @@ services:
       labels:
       # - "traefik.frontend.rule=Host:whoami.scarlettlab.home"
       - "traefik.enable=true"
-      - "traefik.basic.port=8080"
+      - "traefik.basic.port=19999"
       # - "traefik.basic.protocol=http"
       - "traefik.backend=netdata"
       # - "traefik.backend.loadbalancer.stickiness=true"
