@@ -8,11 +8,13 @@ volumes:
 
 services:
   traefik:
-    image: traefik:1.7
+    image: traefik
   command:
+      - "--api"
+      - "--logLevel=DEBUG"
       - "--docker"
       - "--docker.swarmmode=true"
-      - "--docker.domain=docker.localhost"
+      - "--docker.domain=scarlettlab.home"
       - "--docker.watch=true"
       - "--docker.exposedbydefault=true"
       - "--docker.endpoint=unix:///var/run/docker.sock"
@@ -23,9 +25,9 @@ services:
   volumes:
     - /var/run/docker.sock:/var/run/docker.sock # So that Traefik can listen to the Docker events
     - /opt/traefik/traefik.toml:/traefik.toml
-    - /opt/traefik/acme.json:/etc/traefik/acme/acme.json
+    # - /opt/traefik/acme.json:/etc/traefik/acme/acme.json
   networks:
-    - traefik
+    - traefik_net
   labels:
     - "traefik.enable=false"
   deploy:
@@ -34,20 +36,13 @@ services:
   restart_policy:
         condition: on-failure
 
-
-
-
-
-  whoami:
-    image: emilevauge/whoami
-    deploy:
-        labels:
-        - "traefik.enable=true"
-        - "traefik.basic.port=80"
-        - "traefik.basic.protocol=http"
-        - "traefik.backend=e_whoami0"
-        - "traefik.frontend.rule=Host:corpexample.com"
-        - "traefik.docker.network=traefik-net"
-        - "traefik.backend.loadbalancer.swarm=true"
-    networks:
-        - traefik
+networks:
+  web:
+    external: true
+    name: home-web
+  docker:
+    external: true
+    name: home-docker
+  traefik:
+    external: true
+    name: traefik_net
