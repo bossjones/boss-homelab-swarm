@@ -15,6 +15,7 @@ create-networking:
 	docker network create --driver overlay --subnet=10.0.10.0/24 home-docker
 	docker network create --driver overlay --subnet=10.0.11.0/24 home-monitoring
 	docker network create -d overlay home-traefik
+	docker network create -d overlay traefik_proxy
 	docker network ls
 
 

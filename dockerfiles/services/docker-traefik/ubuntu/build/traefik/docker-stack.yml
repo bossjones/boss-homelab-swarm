@@ -1,51 +1,55 @@
-networks:
-    traefik:
-      external: true
-volumes:
-    data:
-
-# SOURCE: https://digita.lism.ro/2018/08/dockerizing-personal-infrastructure/
+version: '3.5'
 
 services:
-  traefik:
-    image: traefik
-  command:
-      - "--api"
-      - "--logLevel=DEBUG"
-      - "--docker"
-      - "--docker.swarmmode=true"
-      - "--docker.domain=scarlettlab.home"
-      - "--docker.watch=true"
-      - "--docker.exposedbydefault=true"
-      - "--docker.endpoint=unix:///var/run/docker.sock"
-    ports:
-      - "80:80" # The HTTP port
-      - "8080:8080" # The Web UI (enabled by --api)
-      - "443:443"
-      # SOURCE: https://github.com/containous/traefik/blob/master/examples/cluster/docker-compose.yml
-      - "5001:443" # Needed for SNI challenge
-      - "5002:80" # Needed for HTTP challeng
-  volumes:
-    - /var/run/docker.sock:/var/run/docker.sock # So that Traefik can listen to the Docker events
-    - /opt/traefik/traefik.toml:/traefik.toml
-    # - /opt/traefik/acme.json:/etc/traefik/acme/acme.json
-  networks:
-    - traefik_proxy
-  labels:
-    - "traefik.enable=false"
-  deploy:
-    placement:
-        constraints: [node.role == manager]
-  restart_policy:
-        condition: on-failure
+    traefik:
+        image: traefik:latest
+        # command: --api --docker --docker.domain=server.test --logLevel=scarlettlab.home
+        command: -c /etc/traefik/config.toml
+        ports:
+            - "80:80"
+            - "443:443"
+            - "8080:8080"
+        networks:
+            - traefik_proxy
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+        configs:
+            - source: traefik_config
+              target: /etc/traefik/traefik.toml
+        deploy:
+            mode: global
+            update_config:
+                parallelism: 1
+                delay: 10s
+            placement:
+                constraints: [node.role==manager]
+            restart_policy:
+                condition: on-failure
+            resources:
+               limits:
+                cpus: '0.30'
+                memory: 128M
+               reservations:
+                   cpus: '0.10'
+                   memory: 50M
+
+            labels:
+                - "traefik.enable=true"
+                - "traefik.docker.network=traefik_proxy"
+                - "traefik.port=8080"
+                - "traefik.backend.loadbalancer.stickiness=true"
+                - "traefik.frontend.passHostHeader=true"
+                - "traefik.frontend.rule=Host:proxy.scarlettlab.home"
+                - "traefik.tags=monitoring"
+
+configs:
+    traefik_config:
+        name: traefik-${TRAEFIX_CONF_VERSION}
+        file: /etc/traefik/config.toml
 
 networks:
-  web:
-    external: true
-    name: home-web
-  docker:
-    external: true
-    name: home-docker
-  traefik:
-    external: true
-    name: traefik_proxy
+    traefik_net:
+        driver: overlay
+    traefik_proxy:
+        external: true
+

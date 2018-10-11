@@ -3,22 +3,26 @@ version: '3.5'
 services:
   visualizer:
     image: dockersamples/visualizer:stable
+    networks:
+      - traefik_proxy
     ports:
       - "9190:8080/tcp"
     stop_grace_period: 1m30s
+    depends_on:
+      - traefik
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
-    labels:
-    # - "traefik.frontend.rule=Host:whoami.scarlettlab.home"
-    - "traefik.enable=true"
-    - "traefik.basic.port=8080"
-    # - "traefik.basic.protocol=http"
-    - "traefik.backend=viz"
-    - "traefik.backend.loadbalancer.sticky=true"
-    - "traefik.frontend.rule=Host:viz.scarlettlab.home"
-    # - "traefik.docker.network=traefik_proxy"
-    - "traefik.backend.loadbalancer.swarm=true"
     deploy:
+      labels:
+      # - "traefik.frontend.rule=Host:whoami.scarlettlab.home"
+      - "traefik.enable=true"
+      - "traefik.basic.port=8080"
+      # - "traefik.basic.protocol=http"
+      - "traefik.backend=viz"
+      - "traefik.backend.loadbalancer.stickiness=true"
+      - "traefik.frontend.rule=Host:viz.scarlettlab.home"
+      # - "traefik.docker.network=traefik_proxy"
+      - "traefik.backend.loadbalancer.swarm=true"
       mode: replicated
       replicas: 1
       restart_policy:
@@ -26,6 +30,10 @@ services:
         delay: 10s
         max_attempts: 3
         window: 120s
+      placement:
+        constraints:
+          - node.role == manager
+          - node.labels.size == small
       resources:
         limits:
           cpus: '0.20'
@@ -43,6 +51,7 @@ networks:
   docker:
     external: true
     name: home-docker
-  traefik:
+  traefik_proxy:
     external: true
+    driver: overlay
     name: traefik_proxy
