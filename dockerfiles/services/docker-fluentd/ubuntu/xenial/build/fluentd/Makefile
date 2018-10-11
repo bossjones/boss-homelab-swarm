@@ -4,7 +4,7 @@ container_name := fluentd
 GIT_BRANCH  = $(shell git rev-parse --abbrev-ref HEAD)
 GIT_SHA     = $(shell git rev-parse HEAD)
 BUILD_DATE  = $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
-VERSION  = $(shell grep "fluentd/fluentd" Dockerfile | head -1 | cut -d":" -f2)
+VERSION  = $(shell cat ./version.txt)
 
 TAG ?= $(VERSION)
 ifeq ($(TAG),@branch)
@@ -37,19 +37,3 @@ push:
 	docker push $(username)/$(container_name):$(TAG)
 
 push-force: build-force push
-
-# test: build
-# 	docker run -p 9200:9200 --name fluentd veltra/fluentd; sleep 15
-# 	docker run --network container:fluentd appropriate/curl --retry 10 --retry-connrefused -u $(fluentd_USERNAME):$(fluentd_PASSWORD) http://localhost:9200
-
-# # Push the image to the dedicated push endpoint at "push.docker.elastic.co"
-# push: test
-# 	$(foreach FLAVOR, $(IMAGE_FLAVORS), \
-# 	  docker tag $(IMAGE_TAG)-$(FLAVOR):$(VERSION_TAG) push.$(IMAGE_TAG)-$(FLAVOR):$(VERSION_TAG); \
-# 	  docker push push.$(IMAGE_TAG)-$(FLAVOR):$(VERSION_TAG); \
-# 	  docker rmi push.$(IMAGE_TAG)-$(FLAVOR):$(VERSION_TAG); \
-# 	)
-# 	# Also push the default version, with no suffix like '-oss' or '-x-pack'
-# 	docker tag $(IMAGE_TAG):$(VERSION_TAG) push.$(IMAGE_TAG):$(VERSION_TAG);
-# 	docker push push.$(IMAGE_TAG):$(VERSION_TAG);
-# 	docker rmi push.$(IMAGE_TAG):$(VERSION_TAG);

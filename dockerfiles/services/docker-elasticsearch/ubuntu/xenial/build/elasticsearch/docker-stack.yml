@@ -85,7 +85,16 @@ services:
     # #     hard: 65536
     # # cap_add:
     # #   - IPC_LOCK
+    networks:
+      - traefik_proxy
     deploy:
+      labels:
+      - "traefik.enable=true"
+      - "traefik.basic.port=9200"
+      - "traefik.backend=elasticsearch"
+      - "traefik.backend.loadbalancer.stickiness=true"
+      - "traefik.frontend.rule=Host:elasticsearch.scarlettlab.home"
+      - "traefik.backend.loadbalancer.swarm=true"
       replicas: 1
       restart_policy:
         condition: on-failure
@@ -100,7 +109,7 @@ services:
       placement:
         constraints:
           - node.labels.memory == high
-          - node.hostname == node2
+          - node.hostname == node3
     configs:
       - source: es-config
         target: /usr/share/elasticsearch/config/elasticsearch.yml
@@ -116,8 +125,14 @@ services:
 
   elasticsearch-cleaner:
     image: rycus86/elasticsearch-cleaner
+    networks:
+      - traefik_proxy
     deploy:
       replicas: 1
+      placement:
+        constraints:
+          - node.labels.memory == high
+          - node.hostname == node3
       resources:
         limits:
           memory: 16M
@@ -159,31 +174,29 @@ services:
   #       max-size: 25m
   #       max-file: 4
 
-  kibana:
-    image: docker.elastic.co/kibana/kibana:5.6.1
-    deploy:
-      replicas: 1
-      resources:
-        limits:
-          memory: 128M
-      # TODO /etc/auth-config should change when the routing stack gets updated
-      labels:
-        routing-auth-realm: Kibana Logs
-        routing-auth: /etc/auth-config/kibana.auth.conf
-        routing-host: logs.scarlettlab.home
-        routing-port: 5601
-    networks:
-      - default
-      - web
-    ports:
-      - 5601:5601
-    logging:
-      driver: json-file
-      options:
-        max-size: 25m
-        max-file: 4
-
-
+  # kibana:
+  #   image: docker.elastic.co/kibana/kibana:5.6.1
+  #   deploy:
+  #     replicas: 1
+  #     resources:
+  #       limits:
+  #         memory: 128M
+  #     # TODO /etc/auth-config should change when the routing stack gets updated
+  #     labels:
+  #       routing-auth-realm: Kibana Logs
+  #       routing-auth: /etc/auth-config/kibana.auth.conf
+  #       routing-host: logs.scarlettlab.home
+  #       routing-port: 5601
+  #   networks:
+  #     - default
+  #     - web
+  #   ports:
+  #     - 5601:5601
+  #   logging:
+  #     driver: json-file
+  #     options:
+  #       max-size: 25m
+  #       max-file: 4
   fluentd:
     image: fluentd
     deploy:
@@ -223,8 +236,14 @@ volumes:
       type: nfs4
       device: :/elasticsearch-data
       o: addr=192.168.60.10,rsize=8192,wsize=8192,timeo=15,hard,intr
-
 networks:
   web:
-    name: home-web
     external: true
+    name: home-web
+  docker:
+    external: true
+    name: home-docker
+  traefik_proxy:
+    external: true
+    driver: overlay
+    name: traefik_proxy
