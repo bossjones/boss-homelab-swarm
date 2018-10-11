@@ -12,181 +12,20 @@ x-nfs-volume-opts:
   o: addr=192.168.60.10,rsize=8192,wsize=8192,timeo=15,hard,intr
 
 services:
-
-#   prometheus:
-#     image: rycus86/prometheus:2.3.2
-#     command: >
-#       --config.file=/etc/prometheus/prometheus.yml
-#       --storage.tsdb.path=/prometheus
-#       --storage.tsdb.no-lockfile
-#       --web.console.libraries=/usr/share/prometheus/console_libraries
-#       --web.console.templates=/usr/share/prometheus/consoles
-#     deploy:
-#       replicas: 1
-#       resources:
-#         limits:
-#           memory: 384M
-#       placement:
-#         constraints:
-#           - node.labels.memory == high
-#     ports:
-#       - 9090:9090
-#     volumes:
-#       - prometheus-data:/prometheus:nocopy
-#       - type: volume
-#         source: prometheus-config
-#         target: /etc/prometheus
-#         read_only: true
-#         volume:
-#           nocopy: true
-#     networks:
-#       - default
-#       - monitoring
-#     logging:
-#       driver: fluentd
-#       options:
-#         <<: *log-options
-#         tag: app.prometheus
-
-#   prometheus-pygen:
-#     image: rycus86/docker-pygen
-#     command: >
-#       --template /etc/docker-pygen/templates/prometheus.tmpl
-#       --target /etc/prometheus/prometheus.yml
-#       --signal prometheus HUP
-#       --interval 3 10
-#       --swarm-manager
-#       --workers tasks.prometheus-pygen-worker
-#     deploy:
-#       replicas: 1
-#       resources:
-#         limits:
-#           memory: 32M
-#       labels:
-#         prometheus-job: pygen-manager-prometheus
-#         prometheus-port: 9413
-#     environment:
-#       DOCKER_HOST: tcp://docker-manager:2375
-#     networks:
-#       - monitoring
-#       - docker
-#     configs:
-#       - source: prometheus-template
-#         target: /etc/docker-pygen/templates/prometheus.tmpl
-#     volumes:
-#       - prometheus-config:/etc/prometheus:nocopy
-#     logging:
-#       driver: fluentd
-#       options:
-#         <<: *log-options
-#         tag: app.pygen.manager.prometheus
-
-#   prometheus-pygen-worker:
-#     image: rycus86/docker-pygen:worker
-#     command: --manager prometheus-pygen
-#     read_only: true
-#     deploy:
-#       mode: global
-#       resources:
-#         limits:
-#           memory: 32M
-#       labels:
-#         prometheus-job: pygen-worker-prometheus
-#         prometheus-port: 9414
-#     volumes:
-#       - /var/run/docker.sock:/var/run/docker.sock:ro
-#     logging:
-#       driver: fluentd
-#       options:
-#         <<: *log-options
-#         tag: app.pygen.worker.prometheus
-
-#   prometheus-node-exporter:
-#     image: rycus86/prometheus-node-exporter:0.16.0
-#     deploy:
-#       mode: global
-#       resources:
-#         limits:
-#           memory: 32M
-#       update_config:
-#         parallelism: 1
-#         order: start-first
-#       labels:
-#         prometheus-job: node-exporter
-#         prometheus-port: 9100
-#     pid: host
-#     logging:
-#       driver: json-file
-#       options:
-#         max-size: 25m
-#         max-file: 4
-
-#   container-metrics:
-#     image: rycus86/container-metrics
-#     command: >
-#       -labels com.docker.swarm.service.name
-#       -interval 15s
-#       -port 8080
-#     deploy:
-#       mode: global
-#       resources:
-#         limits:
-#           memory: 32M
-#       update_config:
-#         parallelism: 1
-#         order: start-first
-#       labels:
-#         prometheus-job: container-metrics
-#         prometheus-port: 8080
-#     volumes:
-#       - /var/run/docker.sock:/var/run/docker.sock:ro
-#     logging:
-#       driver: fluentd
-#       options:
-#         <<: *log-options
-#         tag: app.container.metrics
-
-#   # Visualization
-
-#   grafana:
-#     image: rycus86/grafana:5.2.2
-#     deploy:
-#       replicas: 1
-#       resources:
-#         limits:
-#           memory: 48M
-#       update_config:
-#         parallelism: 1
-#         order: start-first
-#       labels:
-#         routing-host: metrics.scarlettlab.home
-#         routing-port: 3000
-#         prometheus-job: grafana
-#         prometheus-port: 3000
-#     secrets:
-#       - source: grafana-config
-#         target: /etc/grafana/grafana.ini
-#     networks:
-#       - web
-#       - monitoring
-#     ports:
-#       - 3000:3000
-#     volumes:
-#       - grafana-data:/var/lib/grafana/data:nocopy
-#     logging:
-#       driver: fluentd
-#       options:
-#         <<: *log-options
-#         tag: app.grafana
-
   portainer:
     image: portainer/portainer:1.19.1
     command: -H tcp://tasks.portainer-agent:9001 --tlsskipverify
+    networks:
+        - traefik_net
     deploy:
       replicas: 1
       resources:
         limits:
-          memory: 32M
+          cpus: '0.33'
+          memory: 20M
+        reservations:
+          cpus: '0.05'
+          memory: 10M
       update_config:
         parallelism: 1
         order: start-first
@@ -199,6 +38,22 @@ services:
     #   options:
     #     <<: *log-options
     #     tag: app.portainer
+    # SOURCE: https://docs.traefik.io/user-guide/examples/
+    labels:
+    - "traefik.frontend.rule=PathPrefixStrip:/portainer"
+    - "traefik.backend=portainer"
+    - "traefik.port=9001"
+    - "traefik.weight=10"
+    - "traefik.enable=true"
+    - "traefik.passHostHeader=true"
+    - "traefik.docker.network=traefik_net"
+    - "traefik.frontend.entryPoints=http"
+    - "traefik.backend.loadbalancer.swarm=true"
+    - "traefik.backend.loadbalancer.method=drr"
+    # https://github.com/containous/traefik/issues/563#issuecomment-421360934
+    - "traefik.frontend.redirect.regex=^(.*)/portainer$$"
+    - "traefik.frontend.redirect.replacement=$$1/portainer/"
+    - "traefik.frontend.rule=PathPrefix:/portainer;ReplacePathRegex: ^/portainer/(.*) /$$1"
 
   portainer-agent:
     image: portainer/agent:1.1.1
@@ -373,3 +228,7 @@ networks:
   docker:
     name: home-docker
     external: true
+  traefik:
+    external: true
+    name: traefik_net
+

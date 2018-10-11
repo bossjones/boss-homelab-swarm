@@ -22,6 +22,9 @@ services:
       - "80:80" # The HTTP port
       - "8080:8080" # The Web UI (enabled by --api)
       - "443:443"
+      # SOURCE: https://github.com/containous/traefik/blob/master/examples/cluster/docker-compose.yml
+      - "5001:443" # Needed for SNI challenge
+      - "5002:80" # Needed for HTTP challeng
   volumes:
     - /var/run/docker.sock:/var/run/docker.sock # So that Traefik can listen to the Docker events
     - /opt/traefik/traefik.toml:/traefik.toml

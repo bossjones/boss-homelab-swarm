@@ -7,17 +7,21 @@ services:
     ports:
         - "4110:4110/tcp"
     networks:
-        - web
+        - traefik_net
     labels:
     # - "traefik.frontend.rule=Host:whoami.scarlettlab.home"
     - "traefik.enable=true"
+    - "traefik.port=4110"
     - "traefik.basic.port=4110"
-    - "traefik.basic.protocol=http"
+    # - "traefik.basic.protocol=http"
+    - "traefik.frontend.entryPoints=http"
     - "traefik.backend=whoami"
     - "traefik.backend.loadbalancer.sticky=true"
     - "traefik.frontend.rule=Host:whoami.scarlettlab.home"
-    - "traefik.docker.network=traefik-net"
+    - "traefik.docker.network=traefik_net"
     - "traefik.backend.loadbalancer.swarm=true"
+    - "traefik.backend.loadbalancer.method=drr"
+    - "traefik.passHostHeader=true"
     deploy:
       mode: global
       resources:
