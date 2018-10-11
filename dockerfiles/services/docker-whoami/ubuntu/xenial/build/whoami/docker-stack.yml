@@ -7,7 +7,7 @@ services:
     ports:
         - "4110:4110/tcp"
     networks:
-        - traefik_net
+        - traefik-net
     labels:
     # - "traefik.frontend.rule=Host:whoami.scarlettlab.home"
     - "traefik.enable=true"
@@ -37,4 +37,4 @@ networks:
     name: home-docker
   traefik:
     external: true
-    name: traefik_net
+    name: traefik-net
