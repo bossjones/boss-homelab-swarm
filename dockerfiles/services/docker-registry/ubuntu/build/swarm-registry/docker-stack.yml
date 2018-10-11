@@ -1,5 +1,6 @@
 version: '3.5'
 
+# https://gist.github.com/austinfrey/3bb203663cbf367353eb38841c81b89e
 services:
   registry:
     image: registry:2
