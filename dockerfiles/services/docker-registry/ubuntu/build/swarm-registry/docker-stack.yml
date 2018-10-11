@@ -1,0 +1,55 @@
+version: '3.5'
+
+services:
+  registry:
+    image: registry:2
+    # volumes:
+    #   - /home/user/config.yml:/etc/docker/registry/config.yml
+    networks:
+      - traefik_proxy
+    ports:
+        - "5000:5000"
+    deploy:
+      mode: global
+      update_config:
+          parallelism: 1
+          delay: 10s
+      placement:
+          constraints: [node.hostname==node2]
+      restart_policy:
+          condition: on-failure
+      resources:
+          limits:
+          cpus: '0.30'
+          memory: 128M
+          reservations:
+              cpus: '0.10'
+              memory: 50M
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=traefik_proxy"
+        - "traefik.port=5000"
+        - "traefik.backend.loadbalancer.stickiness=true"
+        - "traefik.frontend.passHostHeader=true"
+        - "traefik.frontend.rule=Host:registry.scarlettlab.home"
+    configs:
+        - source: registry_config
+          target: /etc/docker/registry/config.yml
+
+configs:
+    registry_config:
+        name: registry-${REGISTRY_CONF_VERSION}
+        file: /etc/docker/registry/config.yml
+
+
+networks:
+  web:
+    external: true
+    name: home-web
+  docker:
+    external: true
+    name: home-docker
+  traefik_proxy:
+    external: true
+    driver: overlay
+    name: traefik_proxy

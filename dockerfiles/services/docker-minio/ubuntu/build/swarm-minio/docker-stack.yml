@@ -1,0 +1,60 @@
+version: '3.5'
+
+# SOURCE: https://github.com/minio/minio/blob/fae284d6b9825d6c444976be1684664ef5074396/docs/orchestration/docker-swarm/docker-compose.yaml
+services:
+  minio1:
+    command: server http://minio1/export
+    image: minio/minio:RELEASE.2018-10-06T00-15-16Z
+    hostname: minio1
+    networks:
+      - traefik_proxy
+    ports:
+      - "9001:9000/tcp"
+    environment:
+      MINIO_ACCESS_KEY: minio
+      MINIO_SECRET_KEY: minio123
+    stop_grace_period: 1m30s
+    depends_on:
+      - traefik
+    volumes:
+      - minio1-data:/export
+    deploy:
+      labels:
+      - "traefik.enable=true"
+      - "traefik.basic.port=9000"
+      - "traefik.backend=minio"
+      - "traefik.backend.loadbalancer.stickiness=true"
+      - "traefik.frontend.rule=Host:minio.scarlettlab.home"
+      - "traefik.backend.loadbalancer.swarm=true"
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 3
+        window: 120s
+      placement:
+        constraints:
+          - node.labels.minio1==true
+      # resources:
+      #   limits:
+      #     cpus: '0.20'
+      #     memory: 128M
+      #   reservations:
+      #     cpus: '0.10'
+      #     memory: 50M
+
+networks:
+  web:
+    external: true
+    name: home-web
+  docker:
+    external: true
+    name: home-docker
+  traefik_proxy:
+    external: true
+    driver: overlay
+    name: traefik_proxy
+
+volumes:
+  minio1-data:
