@@ -6,6 +6,8 @@ services:
     command: -port 4110
     ports:
         - "4110:4110/tcp"
+    expose:
+        - "4110:4110/tcp"
     networks:
         - traefik_net
     labels:
