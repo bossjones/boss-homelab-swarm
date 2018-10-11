@@ -13,7 +13,7 @@ services:
     - "traefik.enable=true"
     - "traefik.basic.port=80"
     - "traefik.basic.protocol=http"
-    # - "traefik.backend=e_whoami0"
+    - "traefik.backend=whoami"
     - "traefik.backend.loadbalancer.sticky=true"
     - "traefik.frontend.rule=Host:whoami.scarlettlab.home"
     - "traefik.docker.network=traefik-net"
