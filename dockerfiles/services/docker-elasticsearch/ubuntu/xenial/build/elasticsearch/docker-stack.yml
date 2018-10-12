@@ -78,6 +78,7 @@ services:
         target: /usr/share/elasticsearch/config/jvm.options
     # volumes:
     #   - elasticsearch-data:/usr/share/elasticsearch/data:nocopy
+    # SOURCE: volume decleration - https://blog.dahanne.net/2017/11/20/docker-swarm-and-nfs-volumes/
     volumes:
     - type: volume
       source: elasticsearch-data
