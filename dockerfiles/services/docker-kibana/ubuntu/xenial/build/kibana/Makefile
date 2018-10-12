@@ -4,7 +4,7 @@ container_name := kibana
 GIT_BRANCH  = $(shell git rev-parse --abbrev-ref HEAD)
 GIT_SHA     = $(shell git rev-parse HEAD)
 BUILD_DATE  = $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
-VERSION  = $(shell grep "kibana/kibana" Dockerfile | head -1 | cut -d":" -f2)
+VERSION  = $(shell ./version.txt)
 
 TAG ?= $(VERSION)
 ifeq ($(TAG),@branch)
