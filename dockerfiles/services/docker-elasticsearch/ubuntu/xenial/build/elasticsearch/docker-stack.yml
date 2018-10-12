@@ -76,8 +76,14 @@ services:
         target: /usr/share/elasticsearch/config/elasticsearch.yml
       - source: es-jvm-options
         target: /usr/share/elasticsearch/config/jvm.options
+    # volumes:
+    #   - elasticsearch-data:/usr/share/elasticsearch/data:nocopy
     volumes:
-      - elasticsearch-data:/usr/share/elasticsearch/data:nocopy
+    - type: volume
+      source: elasticsearch-data
+      target: /usr/share/elasticsearch/data
+      volume:
+        nocopy: true
     logging:
       driver: json-file
       options:
