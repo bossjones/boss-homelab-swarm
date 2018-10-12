@@ -117,7 +117,7 @@ services:
       replicas: 1
       restart_policy:
         condition: on-failure
-        delay: 60s
+        delay: 120s
       resources:
         limits:
           # cpus: '2'
@@ -193,53 +193,53 @@ services:
   #       max-size: 25m
   #       max-file: 4
 
-  kibana:
-    # image: docker.elastic.co/kibana/kibana:5.6.1
-    image: docker.io/bossjones/kibana:5.6.1
-    networks:
-      - traefik_proxy
-    deploy:
-      replicas: 1
-      resources:
-        limits:
-          memory: 128M
-      # TODO /etc/auth-config should change when the routing stack gets updated
-      labels:
-        routing-auth-realm: Kibana Logs
-        routing-auth: /etc/auth-config/kibana.auth.conf
-        routing-host: logs.scarlettlab.home
-        routing-port: 5601
-    # networks:
-    #   - default
-    #   - web
-    ports:
-      - 5601:5601
-    logging:
-      driver: json-file
-      options:
-        max-size: 25m
-        max-file: 4
+  # kibana:
+  #   # image: docker.elastic.co/kibana/kibana:5.6.1
+  #   image: docker.io/bossjones/kibana:5.6.1
+  #   networks:
+  #     - traefik_proxy
+  #   deploy:
+  #     replicas: 1
+  #     resources:
+  #       limits:
+  #         memory: 128M
+  #     # TODO /etc/auth-config should change when the routing stack gets updated
+  #     labels:
+  #       routing-auth-realm: Kibana Logs
+  #       routing-auth: /etc/auth-config/kibana.auth.conf
+  #       routing-host: logs.scarlettlab.home
+  #       routing-port: 5601
+  #   # networks:
+  #   #   - default
+  #   #   - web
+  #   ports:
+  #     - 5601:5601
+  #   logging:
+  #     driver: json-file
+  #     options:
+  #       max-size: 25m
+  #       max-file: 4
 
-  fluentd:
-    image: fluentd
-    deploy:
-      replicas: 1
-      resources:
-        limits:
-          memory: 96M
-    configs:
-      - source: fluent-config
-        target: /fluentd/etc/fluent.conf
-    ports:
-      - 24224:24224
-      - 24224:24224/udp
-    environment:
-      - RUBY_GC_HEAP_OLDOBJECT_LIMIT_FACTOR=0.8
-    logging:
-      driver: json-file
-      options:
-        max-size: 25m
-        max-file: 4
+  # fluentd:
+  #   image: fluentd
+  #   deploy:
+  #     replicas: 1
+  #     resources:
+  #       limits:
+  #         memory: 96M
+  #   configs:
+  #     - source: fluent-config
+  #       target: /fluentd/etc/fluent.conf
+  #   ports:
+  #     - 24224:24224
+  #     - 24224:24224/udp
+  #   environment:
+  #     - RUBY_GC_HEAP_OLDOBJECT_LIMIT_FACTOR=0.8
+  #   logging:
+  #     driver: json-file
+  #     options:
+  #       max-size: 25m
+  #       max-file: 4
 
 configs:
   es-config:
