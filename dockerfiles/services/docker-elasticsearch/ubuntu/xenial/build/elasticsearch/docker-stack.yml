@@ -119,7 +119,7 @@ services:
       replicas: 1
       restart_policy:
         condition: on-failure
-        delay: 120s
+        delay: 60s
       resources:
         limits:
           # cpus: '2'
