@@ -202,10 +202,17 @@ volumes:
   elasticsearch-data:
     driver: local
     driver_opts:
-      type: nfs4
-      device: :/elasticsearch-data
+      type: "nfs4"
+      device: ":/elasticsearch-data"
       # o: addr=192.168.60.10,rsize=8192,wsize=8192,timeo=15,hard,intr
       o: addr=192.168.60.10,rsize=8192,wsize=8192,timeo=15,hard,intr,nolock,soft,rw
+
+# Alternative
+# docker volume create --driver local \
+#   --opt type=nfs4 \
+#   --opt o=addr=192.168.60.10,uid=1000,gid=1000,rsize=8192,wsize=8192,timeo=15,hard,intr,nolock,soft,rw \
+#   --opt device=:/elasticsearch-data \
+#   elasticsearch-data
 
 networks:
   web:
