@@ -57,6 +57,8 @@ services:
 
   portainer-agent:
     image: portainer/agent:1.1.1
+    networks:
+        - traefik_proxy
     deploy:
       mode: global
       resources:
