@@ -128,7 +128,7 @@ services:
       placement:
         constraints:
           - node.labels.memory == high
-          - node.hostname == node4
+          # - node.hostname == node4
     configs:
       - source: es-config
         target: /usr/share/elasticsearch/config/elasticsearch.yml
