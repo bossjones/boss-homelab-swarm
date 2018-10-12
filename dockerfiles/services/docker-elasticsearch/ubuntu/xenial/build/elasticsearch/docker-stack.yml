@@ -227,7 +227,7 @@ services:
   #       max-file: 4
 
   fluentd:
-    image: fluentd
+    image: docker.io/bossjones/fluentd:latest
     deploy:
       replicas: 1
       resources:
