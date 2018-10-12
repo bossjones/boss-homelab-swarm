@@ -220,7 +220,7 @@ volumes:
     driver: local
     driver_opts:
       type: nfs
-      device: ":/vol/data/elasticsearch-data"
+      device: ":/vol/temp/data/elasticsearch-data"
       # o: addr=192.168.60.10,vers=4,rsize=8192,wsize=8192,timeo=15,hard,intr,nolock,soft,rw
       o: addr=192.168.60.10,vers=4,soft,rw
 
