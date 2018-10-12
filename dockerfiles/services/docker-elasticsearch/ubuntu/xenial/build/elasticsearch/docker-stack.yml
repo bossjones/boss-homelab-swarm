@@ -106,6 +106,8 @@ services:
     # #   - IPC_LOCK
     networks:
       - traefik_proxy
+    depends_on:
+      - traefik
     deploy:
       labels:
       - "traefik.enable=true"
@@ -144,6 +146,9 @@ services:
 
   elasticsearch-cleaner:
     image: rycus86/elasticsearch-cleaner
+    depends_on:
+      - traefik
+      - elasticsearch
     networks:
       - traefik_proxy
     deploy:
@@ -151,7 +156,7 @@ services:
       placement:
         constraints:
           - node.labels.memory == high
-          - node.hostname == node4
+          # - node.hostname == node4
       resources:
         limits:
           memory: 16M
