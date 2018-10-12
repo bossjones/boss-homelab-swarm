@@ -204,7 +204,8 @@ volumes:
     driver_opts:
       type: nfs4
       device: :/elasticsearch-data
-      o: addr=192.168.60.10,rsize=8192,wsize=8192,timeo=15,hard,intr
+      # o: addr=192.168.60.10,rsize=8192,wsize=8192,timeo=15,hard,intr
+      o: addr=192.168.60.10,rsize=8192,wsize=8192,timeo=15,hard,intr,nolock,soft,rw
 
 networks:
   web:
