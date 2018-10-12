@@ -221,7 +221,8 @@ volumes:
     driver_opts:
       type: nfs
       device: ":/mnt/nfs/data/elasticsearch-data"
-      o: addr=192.168.60.10,vers=4,rsize=8192,wsize=8192,timeo=15,hard,intr,nolock,soft,rw
+      # o: addr=192.168.60.10,vers=4,rsize=8192,wsize=8192,timeo=15,hard,intr,nolock,soft,rw
+      o: addr=192.168.60.10,vers=4,soft,rw
 
 # Alternative
 # docker volume create --driver local \
