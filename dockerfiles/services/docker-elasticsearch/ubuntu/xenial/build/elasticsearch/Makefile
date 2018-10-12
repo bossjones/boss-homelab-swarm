@@ -72,3 +72,23 @@ create-networking:
 	docker network create --driver overlay --subnet=10.0.10.0/24 home-docker
 	docker network create --driver overlay --subnet=10.0.11.0/24 home-monitoring
 	docker network ls
+
+bash:
+	docker run -it \
+	--rm \
+	-p 9200:9200 \
+	-p 9300:9300 \
+	--memory="600M" \
+	--cpus="1.5" \
+	--mount type=bind,src=$(pwd)/config/elasticsearch.yml,dst=/usr/share/elasticsearch/config/elasticsearch.yml \
+	--mount type=bind,src=$(pwd)/config/elasticsearch.jvm.options,dst=/usr/share/elasticsearch/config/jvm.options \
+	--env xpack.graph.enabled="false" \
+	--env http.host='0.0.0.0' \
+	--env discovery.zen.minimum.master.nodes='1' \
+	--env discovery.type='single-node' \
+	--env xpack.security.enabled="false" \
+	--env xpack.monitoring.enabled="false" \
+	--env xpack.ml.enabled="false" \
+	--env xpack.watcher.enabled="false" \
+	--env ES_JAVA_OPTS="${ES_JAVA_OPTS}" \
+	docker.io/bossjones/elasticsearch:5.6.1 bash
