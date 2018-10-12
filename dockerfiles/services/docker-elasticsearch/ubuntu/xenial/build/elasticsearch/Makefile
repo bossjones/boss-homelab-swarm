@@ -82,9 +82,8 @@ bash:
 	--cpus="1.5" \
 	--mount type=bind,src=$(pwd)/config/elasticsearch.yml,dst=/usr/share/elasticsearch/config/elasticsearch.yml \
 	--mount type=bind,src=$(pwd)/config/elasticsearch.jvm.options,dst=/usr/share/elasticsearch/config/jvm.options \
-	--env xpack.graph.enabled="false" \
 	--env http.host='0.0.0.0' \
-	--env discovery.zen.minimum.master.nodes='1' \
+	--env discovery.zen.minimum_master_nodes='1' \
 	--env discovery.type='single-node' \
 	--env ES_JAVA_OPTS="${ES_JAVA_OPTS}" \
 	docker.io/bossjones/elasticsearch:5.6.1 bash
