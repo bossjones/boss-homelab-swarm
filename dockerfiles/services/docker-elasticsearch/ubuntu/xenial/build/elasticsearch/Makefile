@@ -86,9 +86,5 @@ bash:
 	--env http.host='0.0.0.0' \
 	--env discovery.zen.minimum.master.nodes='1' \
 	--env discovery.type='single-node' \
-	--env xpack.security.enabled="false" \
-	--env xpack.monitoring.enabled="false" \
-	--env xpack.ml.enabled="false" \
-	--env xpack.watcher.enabled="false" \
 	--env ES_JAVA_OPTS="${ES_JAVA_OPTS}" \
 	docker.io/bossjones/elasticsearch:5.6.1 bash
