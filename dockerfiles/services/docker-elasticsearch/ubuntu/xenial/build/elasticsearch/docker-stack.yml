@@ -149,6 +149,7 @@ services:
     depends_on:
       - traefik
       - elasticsearch
+      - fluentd
     networks:
       - traefik_proxy
     deploy:
@@ -225,26 +226,26 @@ services:
   #       max-size: 25m
   #       max-file: 4
 
-  # fluentd:
-  #   image: fluentd
-  #   deploy:
-  #     replicas: 1
-  #     resources:
-  #       limits:
-  #         memory: 96M
-  #   configs:
-  #     - source: fluent-config
-  #       target: /fluentd/etc/fluent.conf
-  #   ports:
-  #     - 24224:24224
-  #     - 24224:24224/udp
-  #   environment:
-  #     - RUBY_GC_HEAP_OLDOBJECT_LIMIT_FACTOR=0.8
-  #   logging:
-  #     driver: json-file
-  #     options:
-  #       max-size: 25m
-  #       max-file: 4
+  fluentd:
+    image: fluentd
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          memory: 96M
+    configs:
+      - source: fluent-config
+        target: /fluentd/etc/fluent.conf
+    ports:
+      - 24224:24224
+      - 24224:24224/udp
+    environment:
+      - RUBY_GC_HEAP_OLDOBJECT_LIMIT_FACTOR=0.8
+    logging:
+      driver: json-file
+      options:
+        max-size: 25m
+        max-file: 4
 
 configs:
   es-config:
