@@ -22,19 +22,20 @@ version: '3.5'
 #   esdata:
 #     driver: local
 
-docker run -it \
-    --rm \
-    -p 9200:9200 \
-    -p 9300:9300 \
-    --memory="600M" \
-    --cpus="1.5" \
-    --mount type=bind,src=$(pwd)/config/elasticsearch.yml,dst=/usr/share/elasticsearch/config/elasticsearch.yml \
-    --mount type=bind,src=$(pwd)/config/elasticsearch.jvm.options,dst=/usr/share/elasticsearch/config/jvm.options \
-    --env http.host='0.0.0.0' \
-    --env discovery.zen.minimum_master_nodes='1' \
-    --env discovery.type='single-node' \
-    --env ES_JAVA_OPTS="${ES_JAVA_OPTS}" \
-    docker.io/bossjones/elasticsearch:5.6.1 bash
+# NOTE: Working version
+# docker run -it \
+#     --rm \
+#     -p 9200:9200 \
+#     -p 9300:9300 \
+#     --memory="600M" \
+#     --cpus="1.5" \
+#     --mount type=bind,src=$(pwd)/config/elasticsearch.yml,dst=/usr/share/elasticsearch/config/elasticsearch.yml \
+#     --mount type=bind,src=$(pwd)/config/elasticsearch.jvm.options,dst=/usr/share/elasticsearch/config/jvm.options \
+#     --env http.host='0.0.0.0' \
+#     --env discovery.zen.minimum_master_nodes='1' \
+#     --env discovery.type='single-node' \
+#     --env ES_JAVA_OPTS="${ES_JAVA_OPTS}" \
+#     docker.io/bossjones/elasticsearch:5.6.1 bash
 
 services:
   elasticsearch:
@@ -119,11 +120,11 @@ services:
         delay: 60s
       resources:
         limits:
-          cpus: '2'
+          # cpus: '2'
           memory: 600M
-        reservations:
-          cpus: '0.5'
-          memory: 256M
+        # reservations:
+        #   cpus: '0.5'
+        #   memory: 256M
       placement:
         constraints:
           - node.labels.memory == high
@@ -254,6 +255,7 @@ volumes:
       type: nfs4
       device: :/elasticsearch-data
       o: addr=192.168.60.10,rsize=8192,wsize=8192,timeo=15,hard,intr
+
 networks:
   web:
     external: true
