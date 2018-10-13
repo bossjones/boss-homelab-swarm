@@ -132,13 +132,18 @@ services:
       - MAX_INDICES=7
       - INTERVAL=10h
       - TIMEOUT=1m
+    # logging:
+    #   driver: fluentd
+    #   options:
+    #     tag: app.elasticsearch.cleaner
+    #     fluentd-address: 192.168.60.10:24224
+    #     fluentd-async-connect: 'true'
+    #     fluentd-sub-second-precision: 'true'
     logging:
-      driver: fluentd
+      driver: json-file
       options:
-        tag: app.elasticsearch.cleaner
-        fluentd-address: 192.168.60.10:24224
-        fluentd-async-connect: 'true'
-        fluentd-sub-second-precision: 'true'
+        max-size: 25m
+        max-file: 4
 
   # kibana:
   #   image: registry.scarlettlab.home/private/kibana:6.0.0
