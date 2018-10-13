@@ -73,8 +73,8 @@ services:
           memory: 600M
       placement:
         constraints:
-          - node.labels.memory == high
-          # - node.hostname == node4
+          # - node.labels.memory == high
+          - "node.hostname == node4"
     configs:
       - source: es-config
         target: /usr/share/elasticsearch/config/elasticsearch.yml
@@ -83,12 +83,21 @@ services:
     # volumes:
     #   - elasticsearch-data:/usr/share/elasticsearch/data:nocopy
     # SOURCE: volume decleration - https://blog.dahanne.net/2017/11/20/docker-swarm-and-nfs-volumes/
+    # volumes:
+    # - type: volume
+    #   source: elasticsearch_data
+    #   target: /usr/share/elasticsearch/data
+    #   volume:
+    #     nocopy: true
     volumes:
-    - type: volume
-      source: elasticsearch_data
+    # - type: volume
+    #   source: elasticsearch_data
+    #   target: /usr/share/elasticsearch/data
+    #   volume:
+    #     nocopy: true
+    - type: bind
+      source: /mnt/volumes/elasticsearch/elasticsearch-data
       target: /usr/share/elasticsearch/data
-      volume:
-        nocopy: true
     logging:
       driver: json-file
       options:

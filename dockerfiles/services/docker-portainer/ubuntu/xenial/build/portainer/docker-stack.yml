@@ -37,10 +37,10 @@ services:
       labels:
       # - "traefik.frontend.rule=Host:whoami.scarlettlab.home"
       - "traefik.enable=true"
-      # - "traefik.portainer.enable=true" # Enable backend in traefik (alias) [NEW]
-      # - "traefik.frontend.entrypoints=http" # Entrypoints fot container [NEW]
+      - "traefik.portainer.enable=true" # Enable backend in traefik (alias) [NEW]
+      - "traefik.frontend.entrypoints=http" # Entrypoints fot container [NEW]
       - "traefik.port=9000"
-      # - "traefik.portainer.port=9000" # Listen port in container (alias for backend) [NEW]
+      - "traefik.portainer.port=9000" # Listen port in container (alias for backend) [NEW]
       - "traefik.basic.port=9000"
       # - "traefik.basic.protocol=http"
       - "traefik.backend=portainer"
