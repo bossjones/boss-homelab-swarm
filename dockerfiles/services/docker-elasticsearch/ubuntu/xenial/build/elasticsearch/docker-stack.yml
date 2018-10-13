@@ -56,6 +56,7 @@ services:
       labels:
       - "traefik.enable=true"
       - "traefik.basic.port=9200"
+      - "traefik.port=9200"
       - "traefik.backend=elasticsearch"
       - "traefik.backend.loadbalancer.stickiness=true"
       - "traefik.frontend.rule=Host:elasticsearch.scarlettlab.home"
@@ -166,6 +167,7 @@ services:
       # TODO /etc/auth-config should change when the routing stack gets updated
       labels:
       - "traefik.enable=true"
+      - "traefik.port=5601"
       - "traefik.basic.port=5601"
       - "traefik.backend=kibana"
       - "traefik.backend.loadbalancer.stickiness=true"
