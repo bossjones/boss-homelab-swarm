@@ -99,7 +99,7 @@ services:
     # - type: bind
     #   source: /mnt/volumes/elasticsearch/elasticsearch-data
     #   target: /usr/share/elasticsearch/data
-    - es-data-named:/usr/share/elasticsearch/data
+    - "es-data-named:/usr/share/elasticsearch/data:rw"
     logging:
       driver: json-file
       options:
