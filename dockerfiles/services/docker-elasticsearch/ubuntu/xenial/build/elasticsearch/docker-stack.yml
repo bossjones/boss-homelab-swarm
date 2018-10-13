@@ -145,33 +145,13 @@ services:
         max-size: 25m
         max-file: 4
 
-  # kibana:
-  #   image: registry.scarlettlab.home/private/kibana:6.0.0
-  #   deploy:
-  #     replicas: 1
-  #     resources:
-  #       limits:
-  #         memory: 128M
-  #     # TODO /etc/auth-config should change when the routing stack gets updated
-  #     labels:
-  #       routing-auth-realm: Kibana Logs
-  #       routing-auth: /etc/auth-config/kibana.auth.conf
-  #       routing-host: logs.scarlettlab.home
-  #       routing-port: 5601
-  #   networks:
-  #     - default
-  #     - web
-  #   ports:
-  #     - 5601:5601
-  #   logging:
-  #     driver: json-file
-  #     options:
-  #       max-size: 25m
-  #       max-file: 4
-
   kibana:
     # image: docker.elastic.co/kibana/kibana:5.6.1
     image: docker.io/bossjones/kibana:5.6.1
+    environments:
+      elasticsearch.username: ""
+      elasticsearch.password: ""
+      xpack.monitoring.ui.container.elasticsearch.enabled: false
     networks:
       - traefik_proxy
     deploy:
