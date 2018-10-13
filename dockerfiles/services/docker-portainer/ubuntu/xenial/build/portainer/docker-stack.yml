@@ -105,9 +105,10 @@ services:
       mode: global
       placement:
         constraints: [node.platform.os == linux]
-      resources:
-        limits:
-          memory: 32M
+      # resources:
+      #   limits:
+      #     cpus: '0.05'
+      #     memory: 32M
     environment:
       # REQUIRED: Should be equal to the service name prefixed by "tasks." when
       # deployed inside an overlay network
@@ -116,9 +117,15 @@ services:
       LOG_LEVEL: debug
     volumes:
       # - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /var/lib/docker/volumes/:/var/lib/docker/volumes
-      - /var/run/docker.sock:/var/run/docker.sock
+      # - /var/lib/docker/volumes/:/var/lib/docker/volumes
+      # - /var/run/docker.sock:/var/run/docker.sock
       # - /srv/data/docker/var/volumes/:/var/lib/docker/volumes
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+      - type: bind
+        source: /var/lib/docker/volumes/
+        target: /var/lib/docker/volumes
     logging:
       driver: json-file
       options:
