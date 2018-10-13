@@ -19,9 +19,11 @@ services:
         - traefik_proxy
     deploy:
       placement:
-        constraints: [node.role == manager]
+        constraints:
+        - "node.role == manager"
+        - "node.hostname == node3"
       # NOTE: https://github.com/sonrac/instructions/blob/67ee49fd88edecfb4d5d71a06d482e344e8fde1e/TRAEFIK.MD
-      # FIXME: Fyi, look into using this ... possible this works better
+      # FIXME: Fyi, look into using this ... possible this works better ( 10/12/2018 )
       # labels:
       #   - "traefik.enable=true" # Enable traefik for this container
       #   - "traefik.portainer.enable=true" # Enable backend in traefik (alias)
@@ -35,8 +37,11 @@ services:
       labels:
       # - "traefik.frontend.rule=Host:whoami.scarlettlab.home"
       - "traefik.enable=true"
-      - "traefik.basic.port=9000"
+      - "traefik.portainer.enable=true" # Enable backend in traefik (alias) [NEW]
+      - "traefik.frontend.entrypoints=http" # Entrypoints fot container [NEW]
       - "traefik.port=9000"
+      - "traefik.portainer.port=9000" # Listen port in container (alias for backend) [NEW]
+      - "traefik.basic.port=9000"
       # - "traefik.basic.protocol=http"
       - "traefik.backend=portainer"
       - "traefik.backend.loadbalancer.stickiness=true"
