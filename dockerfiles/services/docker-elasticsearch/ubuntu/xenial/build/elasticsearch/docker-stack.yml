@@ -185,7 +185,7 @@ services:
       - "traefik.docker.network=traefik_proxy"
       - "routing-auth-realm=Kibana Logs"
       - "routing-auth=/etc/auth-config/kibana.auth.conf"
-      - "routing-host=logs.scarlettlab.home"
+      - "routing-host=kibana.scarlettlab.home"
       - "routing-port=5601"
         # routing-auth-realm: Kibana Logs
         # routing-auth: /etc/auth-config/kibana.auth.conf
