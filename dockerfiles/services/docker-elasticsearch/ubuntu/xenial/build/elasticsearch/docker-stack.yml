@@ -164,32 +164,43 @@ services:
   #       max-size: 25m
   #       max-file: 4
 
-  # kibana:
-  #   # image: docker.elastic.co/kibana/kibana:5.6.1
-  #   image: docker.io/bossjones/kibana:5.6.1
-  #   networks:
-  #     - traefik_proxy
-  #   deploy:
-  #     replicas: 1
-  #     resources:
-  #       limits:
-  #         memory: 128M
-  #     # TODO /etc/auth-config should change when the routing stack gets updated
-  #     labels:
-  #       routing-auth-realm: Kibana Logs
-  #       routing-auth: /etc/auth-config/kibana.auth.conf
-  #       routing-host: logs.scarlettlab.home
-  #       routing-port: 5601
-  #   # networks:
-  #   #   - default
-  #   #   - web
-  #   ports:
-  #     - 5601:5601
-  #   logging:
-  #     driver: json-file
-  #     options:
-  #       max-size: 25m
-  #       max-file: 4
+  kibana:
+    # image: docker.elastic.co/kibana/kibana:5.6.1
+    image: docker.io/bossjones/kibana:5.6.1
+    networks:
+      - traefik_proxy
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          memory: 128M
+      # TODO /etc/auth-config should change when the routing stack gets updated
+      labels:
+      - "traefik.enable=true"
+      - "traefik.basic.port=5601"
+      - "traefik.backend=kibana"
+      - "traefik.backend.loadbalancer.stickiness=true"
+      - "traefik.frontend.rule=Host:kibana.scarlettlab.home"
+      - "traefik.backend.loadbalancer.swarm=true"
+      - "traefik.docker.network=traefik_proxy"
+      - "routing-auth-realm=Kibana Logs"
+      - "routing-auth=/etc/auth-config/kibana.auth.conf"
+      - "routing-host=logs.scarlettlab.home"
+      - "routing-port=5601"
+        # routing-auth-realm: Kibana Logs
+        # routing-auth: /etc/auth-config/kibana.auth.conf
+        # routing-host: logs.scarlettlab.home
+        # routing-port: 5601
+    # networks:
+    #   - default
+    #   - web
+    ports:
+      - "5601:5601"
+    logging:
+      driver: json-file
+      options:
+        max-size: 25m
+        max-file: 4
 
   fluentd:
     image: docker.io/bossjones/fluentd:latest
