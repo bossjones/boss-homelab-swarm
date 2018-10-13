@@ -20,6 +20,18 @@ services:
     deploy:
       placement:
         constraints: [node.role == manager]
+      # NOTE: https://github.com/sonrac/instructions/blob/67ee49fd88edecfb4d5d71a06d482e344e8fde1e/TRAEFIK.MD
+      # FIXME: Fyi, look into using this ... possible this works better
+      # labels:
+      #   - "traefik.enable=true" # Enable traefik for this container
+      #   - "traefik.portainer.enable=true" # Enable backend in traefik (alias)
+      #   - "traefik.backend=traefik" # Backend name
+      #   - "traefik.portainer.frontend.rule=Host:docker-admin.stage.ministra" # Front end rule host
+      #   - "traefik.docker.network=traefik-net" # Traefik network. Must be attachable to traefik container network
+      #   - "traefik.frontend.entrypoints=https,http" # Entrypoints fot container
+      #   - "traefik.http.redirect=https" # Force redirect option
+      #   - "traefik.port=9000" # Listen port in container
+      #   - "traefik.portainer.port=9000" # Listen port in container (alias for backend)
       labels:
       # - "traefik.frontend.rule=Host:whoami.scarlettlab.home"
       - "traefik.enable=true"
