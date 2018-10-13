@@ -24,11 +24,12 @@ services:
       # - "traefik.frontend.rule=Host:whoami.scarlettlab.home"
       - "traefik.enable=true"
       - "traefik.basic.port=9000"
+      - "traefik.port=9000"
       # - "traefik.basic.protocol=http"
       - "traefik.backend=portainer"
       - "traefik.backend.loadbalancer.stickiness=true"
       - "traefik.frontend.rule=Host:portainer.scarlettlab.home"
-      # - "traefik.docker.network=traefik_proxy"
+      - "traefik.docker.network=traefik_proxy"
       - "traefik.backend.loadbalancer.swarm=true"
       # labels:
       # - "traefik.frontend.rule=PathPrefixStrip:/portainer"
