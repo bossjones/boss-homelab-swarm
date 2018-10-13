@@ -15,6 +15,10 @@ services:
   portainer:
     image: portainer/portainer:1.19.1
     command: -H tcp://tasks.portainer-agent:9001 --tlsskipverify
+    # environment:
+    #   - PUID=${PUID}
+    #   - PGID=${PGID}
+    #   - TZ=${TZ}
     networks:
         - traefik_proxy
         - default
