@@ -77,6 +77,8 @@ services:
 
   portainer-agent:
     image: portainer/agent:1.1.1
+    ports:
+      - "9001:9001"
     networks:
         - traefik_proxy
     deploy:
