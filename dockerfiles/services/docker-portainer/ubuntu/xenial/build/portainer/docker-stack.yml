@@ -67,18 +67,21 @@ services:
       mode: replicated
       resources:
         limits:
-          cpus: '0.33'
+          cpus: '1'
           memory: 20M
         # reservations:
         #   cpus: '0.05'
         #   memory: 10M
       update_config:
         parallelism: 1
-        order: start-first
+        order: stop-first
     ports:
       - "9000:9000"
     volumes:
-      - portainer-data:/data:nocopy
+      - type: bind
+        source: /mnt/volumes/portainer/portainer-data
+        target: /data
+      # - portainer-data:/data:nocopy # FORMALLY USING THIS
       # - /srv/data/docker/containers/portainer/data:/data
     logging:
       driver: json-file
