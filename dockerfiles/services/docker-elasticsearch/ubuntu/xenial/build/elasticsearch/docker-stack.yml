@@ -61,6 +61,7 @@ services:
       - "traefik.backend.loadbalancer.stickiness=true"
       - "traefik.frontend.rule=Host:elasticsearch.scarlettlab.home"
       - "traefik.backend.loadbalancer.swarm=true"
+      - "traefik.docker.network=traefik_proxy"
       replicas: 1
       update_config:
         parallelism: 1
@@ -293,3 +294,5 @@ networks:
     external: true
     driver: overlay
     name: traefik_proxy
+  # default:
+  #   driver: overlay

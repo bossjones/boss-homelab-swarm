@@ -17,6 +17,7 @@ services:
     command: -H tcp://tasks.portainer-agent:9001 --tlsskipverify
     networks:
         - traefik_proxy
+        - default
     deploy:
       placement:
         constraints:
@@ -97,10 +98,10 @@ services:
 
   portainer-agent:
     image: portainer/agent:1.1.1
-    ports:
-      - "9001:9001"
+    # ports:
+    #   - "9001:9001"
     networks:
-        - traefik_proxy
+      - default
     deploy:
       mode: global
       placement:
@@ -113,7 +114,7 @@ services:
       # REQUIRED: Should be equal to the service name prefixed by "tasks." when
       # deployed inside an overlay network
       AGENT_CLUSTER_ADDR: tasks.portainer-agent
-      AGENT_PORT: 9001
+      # AGENT_PORT: 9001
       LOG_LEVEL: debug
     volumes:
       # - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -123,8 +124,11 @@ services:
       - type: bind
         source: /var/run/docker.sock
         target: /var/run/docker.sock
+      # - type: bind
+      #   source: /var/lib/docker/volumes/
+      #   target: /var/lib/docker/volumes
       - type: bind
-        source: /var/lib/docker/volumes/
+        source: /var/lib/docker/volumes
         target: /var/lib/docker/volumes
     logging:
       driver: json-file
@@ -308,3 +312,5 @@ networks:
     external: true
     driver: overlay
     name: traefik_proxy
+  default:
+    driver: overlay
