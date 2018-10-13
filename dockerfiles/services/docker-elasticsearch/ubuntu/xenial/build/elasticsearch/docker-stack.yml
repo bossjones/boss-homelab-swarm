@@ -153,7 +153,7 @@ services:
   kibana:
     # image: docker.elastic.co/kibana/kibana:5.6.1
     image: docker.io/bossjones/kibana:5.6.1
-    environments:
+    environment:
       elasticsearch.username: ""
       elasticsearch.password: ""
       xpack.monitoring.ui.container.elasticsearch.enabled: false
