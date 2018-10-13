@@ -162,7 +162,7 @@ services:
       replicas: 1
       resources:
         limits:
-          memory: 128M
+          memory: 200M
       # TODO /etc/auth-config should change when the routing stack gets updated
       labels:
       - "traefik.enable=true"
