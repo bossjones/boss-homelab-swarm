@@ -214,15 +214,33 @@ configs:
 #       # o: addr=192.168.60.10,rsize=8192,wsize=8192,timeo=15,hard,intr
 #       o: addr=192.168.60.10,rsize=8192,wsize=8192,timeo=15,hard,intr,nolock,soft,rw
 
+# FIXME: BEST ATTEMPT 10/12/2018
 # o: addr=192.168.60.10,rsize=8192,wsize=8192,timeo=15,hard,intr
+# volumes:
+#   elasticsearch_data:
+#     driver: local
+#     driver_opts:
+#       type: nfs
+#       device: ":/vol/temp/data/elasticsearch-data"
+#       # o: addr=192.168.60.10,vers=4,rsize=8192,wsize=8192,timeo=15,hard,intr,nolock,soft,rw
+#       o: addr=192.168.60.10,vers=4,soft,rw
+
 volumes:
   elasticsearch_data:
-    driver: local
-    driver_opts:
-      type: nfs
-      device: ":/vol/temp/data/elasticsearch-data"
-      # o: addr=192.168.60.10,vers=4,rsize=8192,wsize=8192,timeo=15,hard,intr,nolock,soft,rw
-      o: addr=192.168.60.10,vers=4,soft,rw
+    # driver: local
+    # driver_opts:
+    #   type: 'none'
+    #   o: 'bind'
+    #   device: '/vol/temp/data/elasticsearch-data'
+
+# volumes:
+#   elasticsearch_data:
+#     driver: local
+#     driver_opts:
+#       type: nfs
+#       device: ":/vol/temp/data/elasticsearch-data"
+#       # o: addr=192.168.60.10,vers=4,rsize=8192,wsize=8192,timeo=15,hard,intr,nolock,soft,rw
+#       o: addr=192.168.60.10,vers=4,soft,rw
 
 # Alternative
 # docker volume create --driver local \
@@ -230,6 +248,13 @@ volumes:
 #   --opt o=addr=192.168.60.10,uid=1000,gid=1000,rsize=8192,wsize=8192,timeo=15,hard,intr,nolock,soft,rw \
 #   --opt device=:/mnt/nfs/data/elasticsearch-data \
 #   elasticsearch-data
+
+# docker volume create --driver local \
+#   --opt type=nfs \
+#   --opt o=addr=192.168.60.10,rsize=8192,wsize=8192,timeo=15,hard,intr,nolock,soft,rw \
+#   --opt device=:/vol/temp/data/elasticsearch-data \
+#   elasticsearch-data
+
 
 # Alternative
 # docker volume create --driver local \
