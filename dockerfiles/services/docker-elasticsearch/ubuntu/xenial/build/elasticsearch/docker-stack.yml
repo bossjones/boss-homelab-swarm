@@ -61,6 +61,10 @@ services:
       - "traefik.frontend.rule=Host:elasticsearch.scarlettlab.home"
       - "traefik.backend.loadbalancer.swarm=true"
       replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: stop-first
       restart_policy:
         condition: on-failure
         delay: 60s
