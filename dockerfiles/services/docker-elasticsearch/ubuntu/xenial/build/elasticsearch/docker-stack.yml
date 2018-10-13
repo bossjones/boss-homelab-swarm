@@ -95,14 +95,17 @@ services:
     #   target: /usr/share/elasticsearch/data
     #   volume:
     #     nocopy: true
-    - type: bind
-      source: /mnt/volumes/elasticsearch/elasticsearch-data
-      target: /usr/share/elasticsearch/data
+    # - type: bind
+    #   source: /mnt/volumes/elasticsearch/elasticsearch-data
+    #   target: /usr/share/elasticsearch/data
+    - es-data-named:/usr/share/elasticsearch/data
     logging:
       driver: json-file
       options:
         max-size: 25m
         max-file: 4
+
+# docker volume create es-data-named
 
   # elasticsearch-cleaner:
   #   image: rycus86/elasticsearch-cleaner
@@ -239,6 +242,8 @@ configs:
 #       o: addr=192.168.60.10,vers=4,soft,rw
 
 volumes:
+  es-data-named:
+    external: true
   elasticsearch_data:
     # driver: local
     # driver_opts:
