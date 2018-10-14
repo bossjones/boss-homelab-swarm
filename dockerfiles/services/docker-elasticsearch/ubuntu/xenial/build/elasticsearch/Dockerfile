@@ -4,10 +4,10 @@ FROM docker.elastic.co/elasticsearch/elasticsearch:5.6.1
 # Add your elasticsearch plugins setup here
 # Example: RUN elasticsearch-plugin install analysis-icu
 
-COPY ./config/elasticsearch.yml ./config/elasticsearch.yml
-COPY ./config/elasticsearch.jvm.options ./config/jvm.options
+COPY --chown=elasticsearch:elasticsearch ./config/elasticsearch.yml ./config/elasticsearch.yml
+COPY --chown=elasticsearch:elasticsearch ./config/elasticsearch.jvm.options ./config/jvm.options
 
-COPY ./plugins /plugins
+COPY --chown=elasticsearch:elasticsearch ./plugins /plugins
 
 RUN elasticsearch-plugin remove x-pack --purge
 RUN elasticsearch-plugin install file:///plugins/elasticsearch-prometheus-exporter-5.6.1.0.zip
